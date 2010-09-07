@@ -1,16 +1,35 @@
+import std.path;
+import std.process;
 import std.stdio;
 import window_manager;
+
+import core.sys.posix.unistd;
 
 version(unittest) {
   void main() {}
 } else {
   void main(string[] argv) {
-    Window window = findWindowByProcessName(argv[1]);
+    if (argv.length < 2) {
+      writeln("Usage: ", basename(argv[0]), " program_name [program arguments]");
+    }
+
+    auto window = findMatchingWindow(argv[1]);
 
     if (window) {
-      writeln(window.name, " (", window.processName, ")");
+      window.activate();
     } else {
-      writeln("not found");
+      fork_and_run(argv[1], argv[2 .. $]);
     }
+  }
+}
+
+private void fork_and_run(in string command, in string[] args) {
+  pid_t pid = fork();
+
+  if (!pid) {
+    // FIXME: Doesn't work with gvim
+    // execvp(command, args);
+
+    system(command);
   }
 }
