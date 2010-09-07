@@ -1,0 +1,51 @@
+Gimme
+=====
+
+Gimme is tiny utility for very simple task:
+
+I want to work with a program. If the progam is already running, bring it to the front and give it the focus. If not, run it.
+
+It's intended to be mapped to global shortcuts, using means of your window manager or desktop environment of choice. For example, you can map <Win+F> to "gimme firefox", so pressing Win + F will always give firefox under your hands, no mattern if it is already running or not.
+
+Usage
+=====
+
+  gimme name_of_program [program arguments]
+
+Example
+=======
+
+Run/Activate firefox:
+
+  gimme firefox
+
+Activate gim or run it with stuff.txt argument:
+
+  gimme gvim stuff.txt
+
+Limitations
+===========
+
+Works only in linux (or POSIX compatible system) with X11 and a EWMH compliant window manager. 
+
+The lookup is done over all top level windows, comparing their process name (if available) and window title. The comparison is a case-insensitive substring match, which means that, for example:
+
+  gimme fire
+
+will match firefox (if it's already running), or
+
+  gimme wikipedia
+
+will match firefox showing a wikipedia page (because it will have "Wikipedia" in it's title).
+
+
+ToDo
+====
+
+Make the matching more configurable. Allow to match by process name, window class, 
+window role, window title and any combination of them. 
+
+Legal shit
+==========
+
+Copyright (c) 2010 Adam Cigánek. Released under the MIT license.

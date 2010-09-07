@@ -1,6 +1,11 @@
 PROGRAM = gimme
-SOURCES = main.d window_manager.d libs/X11/X.d libs/X11/Xlib.d
-DFLAGS  = -L-lX11
+SOURCES = main.d window_manager.d libs/X11/X.d libs/X11/Xlib.d libs/X11/Xatom.d
+
+COMMON_DFLAGS  = -L-lX11
+DEBUG_DFLAGS   = $(COMMON_DFLAGS) -w -wi
+RELEASE_DFLAGS = $(COMMON_DFLAGS) -inline -release -O
+
+DFLAGS         = $(RELEASE_DFLAGS)
 
 TEST_PROGRAM = $(PROGRAM)_test
 

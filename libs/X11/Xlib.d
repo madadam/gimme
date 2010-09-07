@@ -834,7 +834,8 @@ struct XClientMessageEvent
 	Window window;
 	Atom message_type;
 	int format;
-	union data{
+
+	union /* data */ {
 		byte b[20];
 		short s[10];
 		int l[5];
