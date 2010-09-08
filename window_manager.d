@@ -1,5 +1,5 @@
 import std.algorithm;
-import std.contracts;
+import std.exception;
 import std.conv;
 import std.c.string;
 import std.file;
@@ -49,10 +49,13 @@ struct Window {
    */
   @property
   string title() {
-    byte* raw;
+    byte* rawBytes;
  
-    if (xlib.XFetchName(display, _handle, &raw)) {
-      return fromStringz(cast(char*) raw);
+    if (xlib.XFetchName(display, _handle, &rawBytes)) {
+      scope(exit) xlib.XFree(rawBytes);
+      auto rawChars = cast(char*) rawBytes;
+
+      return cast(string) rawChars[0 .. strlen(rawChars)].dup;
     } else {
       return null;
     }
@@ -153,16 +156,6 @@ private uint[] readWindowProperty(xlib.Window window, xlib.Atom property) {
   enforce(bytesAfter == 0);
 
   return (cast(uint*) data)[0 .. numItems].dup;
-}
-
-unittest {
-  char[6] stringz = ['h', 'e', 'l', 'l', 'o', '\0'];
-
-  assert("hello" == fromStringz(cast(char*) stringz));
-}
-
-private string fromStringz(const(char)* input) {
-  return cast(string) input[0 .. strlen(input)];
 }
  
 private string processName(uint pid) {
