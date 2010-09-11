@@ -1,12 +1,13 @@
 import std.algorithm;
 import std.exception;
 import std.conv;
-import std.c.string;
 import std.file;
 import std.string : tolower;
 
 import xlib  = std.c.linux.X11.Xlib;
 import xatom = std.c.linux.X11.Xatom;
+
+import string_helpers;
 
 private xlib.Display* display;
 private xlib.Atom atom_NET_ACTIVE_WINDOW;
@@ -49,13 +50,11 @@ struct Window {
    */
   @property
   string title() {
-    byte* rawBytes;
- 
-    if (xlib.XFetchName(display, _handle, &rawBytes)) {
-      scope(exit) xlib.XFree(rawBytes);
-      auto rawChars = cast(char*) rawBytes;
+    byte* data;
 
-      return cast(string) rawChars[0 .. strlen(rawChars)].dup;
+    if (xlib.XFetchName(display, _handle, &data)) {
+      scope(exit) xlib.XFree(data);
+      return fromStringz(cast(char*) data);
     } else {
       return null;
     }
@@ -167,4 +166,3 @@ private string processName(uint pid) {
     return null;
   }
 }
-

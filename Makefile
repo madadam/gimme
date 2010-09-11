@@ -1,5 +1,5 @@
 PROGRAM = gimme
-SOURCES = main.d window_manager.d libs/X11/X.d libs/X11/Xlib.d libs/X11/Xatom.d
+SOURCES = main.d string_helpers.d window_manager.d libs/X11/X.d libs/X11/Xlib.d libs/X11/Xatom.d
 
 COMMON_DFLAGS  = -L-lX11
 DEBUG_DFLAGS   = $(COMMON_DFLAGS) -w -wi
