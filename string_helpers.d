@@ -29,10 +29,10 @@ unittest {
 
 // Converts 0-terminated C-style string into D-style string. Assumes the input
 // string is encoded as utf8, but skips any invalid code units.
-protected string fromStringz(char* stringz) {
-  string result;
-  auto   output = appender(&result);
-  char*  input = stringz;
+protected string fromStringz(const(char)* stringz) {
+  string       result;
+  auto         output = appender(&result);
+  const(char)* input = stringz;
 
   while(readCodePoint(output, input)) {}
 
@@ -40,7 +40,7 @@ protected string fromStringz(char* stringz) {
 }
 
 private {
-  bool readCodePoint(Appender!string output, ref char* input) {
+  bool readCodePoint(Appender!string output, ref const(char)* input) {
     if (input is null) {
       return false;
     }
@@ -52,7 +52,26 @@ private {
            skipInvalidCodePoint(input);
   }
 
-  pure bool isStart(int bytes)(char unit) {
+  bool readCodePointOfLength(int bytes)(Appender!string output, ref const(char)* input) {
+    if (isStartCodeUnit!bytes(*input) && 
+        areContinuationCodeUnits!(bytes - 1)(input + 1)) {
+      copyCodeUnits(output, input, bytes);
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  bool skipInvalidCodePoint(ref const(char)* input) {
+    if (input[0] != 0) {
+      input += 1;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  pure bool isStartCodeUnit(int bytes)(char unit) {
     if (unit == 0) {
       return false;
     }
@@ -70,14 +89,10 @@ private {
     }
   }
 
-  pure bool isContinuation(char unit) {
-    return (unit & 0b11000000) == 0b10000000;
-  }
-
-  pure bool areContinuations(int number)(char* input) {
+  pure bool areContinuationCodeUnits(int number)(const char* input) {
     static if (number > 0) {
       foreach(i; 0 .. number) {
-        if (!isContinuation(input[i])) {
+        if (!isContinuationCodeUnit(input[i])) {
           return false;
         }
       }
@@ -85,26 +100,12 @@ private {
 
     return true;
   }
-
-  bool readCodePointOfLength(int bytes)(Appender!string output, ref char* input) {
-    if (isStart!bytes(*input) && areContinuations!(bytes - 1)(input + 1)) {
-      copyCodeUnits(output, input, bytes);
-      return true;
-    } else {
-      return false;
-    }
+  
+  pure bool isContinuationCodeUnit(char unit) {
+    return (unit & 0b11000000) == 0b10000000;
   }
 
-  bool skipInvalidCodePoint(ref char* input) {
-    if (input[0] != 0) {
-      input += 1;
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  void copyCodeUnits(Appender!string output, ref char* input, int number) {
+  void copyCodeUnits(Appender!string output, ref const(char)* input, int number) {
     output.put(cast(string) input[0 .. number]);
     input += number;
   }
