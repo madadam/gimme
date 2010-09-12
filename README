@@ -15,6 +15,8 @@ DigitalMars D2 compiler (which can be found in your distro's package repository,
 http://www.digitalmars.com/d/2.0/dmd-linux.html). It's possible that other D2 compiler
 will work, but I haven't tested it. You'll also need the D2 standard library (called phobos).
 
+If you, like me, use Archlinux, then you can find both dmd2 and libphobos2 in AUR. The easiest way to install them is using yaourt. If you use different distro, then you are on your own. 
+
 Then, cd into the directory where you've downloaded the source, and do:
 
   make
