@@ -30,13 +30,12 @@ unittest {
 // Converts 0-terminated C-style string into D-style string. Assumes the input
 // string is encoded as utf8, but skips any invalid code units.
 protected string fromStringz(const(char)* stringz) {
-  string       result;
-  auto         output = appender(&result);
+  auto         output = appender!string();
   const(char)* input = stringz;
 
   while(readCodePoint(output, input)) {}
 
-  return result;
+  return output.data;
 }
 
 private {
