@@ -1,3 +1,5 @@
+module string_helpers;
+
 import std.array;
 
 unittest {

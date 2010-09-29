@@ -1,16 +1,20 @@
 PROGRAM = gimme
-SOURCES = main.d string_helpers.d window_manager.d libs/X11/X.d libs/X11/Xlib.d libs/X11/Xatom.d
+MAIN_SOURCE = main.d
 
-COMMON_DFLAGS  = -L-lX11
+COMMON_DFLAGS  = -I~/include
 DEBUG_DFLAGS   = $(COMMON_DFLAGS) -w -wi
 RELEASE_DFLAGS = $(COMMON_DFLAGS) -inline -release -O
 
-DFLAGS         = $(RELEASE_DFLAGS)
+ifdef RELEASE
+DFLAGS = $(RELEASE_DFLAGS)
+else
+DFLAGS = $(DEBUG_DFLAGS)
+endif
 
 TEST_PROGRAM = $(PROGRAM)_test
 
-$(PROGRAM): $(SOURCES)
-	dmd -of$(PROGRAM) $(DFLAGS) $(SOURCES)
+$(PROGRAM): $(MAIN_SOURCE)
+	rdmd --build-only -of$(PROGRAM) $(DFLAGS) $(MAIN_SOURCE)
 
 build: $(PROGRAM)
 
@@ -18,8 +22,7 @@ run: build
 	./$(PROGRAM)
 
 test: $(SOURCES)
-	dmd -of$(TEST_PROGRAM) $(DFLAGS) -unittest $(SOURCES)
-	./$(TEST_PROGRAM)
+	rdmd $(DFLAGS) -unittest $(MAIN_SOURCE)
 
 clean:
 	rm -f *.o

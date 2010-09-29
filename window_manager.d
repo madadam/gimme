@@ -1,11 +1,13 @@
+module window_manager;
+
 import std.algorithm;
 import std.exception;
 import std.conv;
 import std.file;
 import std.string : tolower;
 
-import xlib  = std.c.linux.X11.Xlib;
-import xatom = std.c.linux.X11.Xatom;
+import xlib  = X11.Xlib;
+import xatom = X11.Xatom;
 
 import string_helpers;
 
